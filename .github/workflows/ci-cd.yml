@@ -1,0 +1,32 @@
+name: CI/CD Pipeline
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  build:
+    name: "Build 🦕"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Deno
+        uses: denoland/setup-deno@v2
+
+      - name: Setup Environment Variables
+        run: echo "DATABASE_URL=${{ secrets.DATABASE_URL }}" >> $GITHUB_ENV
+
+      - name: Install Dependencies
+        run: deno install --allow-scripts=npm:prisma,npm:@prisma/client,npm:@prisma/engines
+
+      - name: Run Prisma Generate
+        run: deno run -A npm:prisma generate --no-engine
+
+      - name: Run Linter
+        run: deno lint
+
+      - name: Run App
+        run: deno task start
