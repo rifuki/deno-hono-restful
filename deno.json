@@ -1,0 +1,11 @@
+{
+  "tasks": {
+    "dev": "deno run --watch --allow-all main.ts"
+  },
+  "imports": {
+    "@prisma/client": "npm:@prisma/client@^6.10.1",
+    "@prisma/extension-accelerate": "npm:@prisma/extension-accelerate@^2.0.1",
+    "@std/dotenv": "jsr:@std/dotenv@^0.225.5"
+  },
+  "nodeModulesDir": "auto"
+}
