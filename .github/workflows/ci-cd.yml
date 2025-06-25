@@ -28,5 +28,5 @@ jobs:
       - name: Run Linter
         run: deno lint
 
-      - name: Run App
-        run: deno task start
+      - name: Run Test
+        run: deno test --allow-all

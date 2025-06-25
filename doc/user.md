@@ -9,7 +9,6 @@ Request Body :
 ```json
 {
   "username": "string",
-  "email": "string",
   "password": "string"
 }
 ```
@@ -20,7 +19,6 @@ Response Body (Success) :
 {
   "data": {
     "username": "string",
-    "email": "string"
   }
 }
 ```
@@ -41,7 +39,7 @@ Request Body :
 
 ```json
 {
-  "email": "string",
+  "username": "string",
   "password": "string"
 }
 ```
@@ -52,7 +50,6 @@ Response Body :
 {
   "data": {
     "username": "string",
-    "email": "string",
     "token": "token"
   }
 }
@@ -72,7 +69,6 @@ Response Body :
 {
   "data": {
     "username": "string",
-    "email": "string"
   }
 }
 ```
@@ -100,7 +96,6 @@ Response Body :
 {
   "data": {
     "username": "string",
-    "email": "string"
   }
 }
 ```
