@@ -85,6 +85,7 @@ Deno.test({
         password: "userpassword",
       } satisfies LoginUserRequest;
       const user = await UserTest.create(payload);
+
       const response = await app.request("/api/users/login", {
         method: "POST",
         body: JSON.stringify({
@@ -370,7 +371,6 @@ Deno.test({
 Deno.test({
   name: "[DELETE /api/users/@me] should not be able to logout without invalid token",
   fn: async () => {
-    await UserTest.create();
     const response = await app.request("/api/users/@me", {
       method: "DELETE",
       headers: {
