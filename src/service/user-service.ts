@@ -90,8 +90,14 @@ class UserService {
     return response;
   }
 
-  static async get(token: string): Promise<User> {
-    UserValidation.TOKEN.parse(token);
+  static async get(token: string | undefined): Promise<User> {
+    UserValidation.TOKEN.safeParse(token);
+
+    if (!token) {
+      throw new HTTPException(401, {
+        message: "Authorization token is required.",
+      });
+    }
 
     const user = await prismaClient.user.findFirst({
       where: {
@@ -131,6 +137,19 @@ class UserService {
     });
 
     return response;
+  }
+
+  static async logout(user: User): Promise<boolean> {
+    await prismaClient.user.update({
+      where: {
+        username: user.username,
+      },
+      data: {
+        token: null,
+      },
+    });
+
+    return true;
   }
 }
 

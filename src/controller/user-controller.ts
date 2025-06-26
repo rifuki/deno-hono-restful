@@ -1,5 +1,4 @@
 import { Hono } from "@hono/hono";
-import { HTTPException } from "@hono/hono/http-exception";
 
 import { ApplicationVariables } from "@/model/app-model.ts";
 import { UserService } from "@/service/index.ts";
@@ -11,9 +10,12 @@ userController.post("/", async (c) => {
 
   const response = await UserService.register(raw_json);
 
-  return c.json({
-    data: response,
-  }, 201);
+  return c.json(
+    {
+      data: response,
+    },
+    201,
+  );
 });
 
 userController.post("/login", async (c) => {
@@ -27,11 +29,6 @@ userController.post("/login", async (c) => {
 // Middleware to check token and set user in context
 userController.use(async (c, next) => {
   const token = c.req.header("Authorization");
-  if (!token) {
-    throw new HTTPException(401, {
-      message: "Authorization token is required.",
-    });
-  }
 
   const user = await UserService.get(token);
 
@@ -55,6 +52,16 @@ userController.patch("/@me", async (c) => {
   const raw_json = c.req.parseBody;
 
   const response = await UserService.update(user, raw_json);
+
+  return c.json({
+    data: response,
+  });
+});
+
+userController.delete("/@me", async (c) => {
+  const user = c.get("user");
+
+  const response = await UserService.logout(user);
 
   return c.json({
     data: response,
