@@ -17,6 +17,9 @@ export type UserResponse = {
   token?: string | null;
 };
 
+export const TokenSchema = z.string().min(1);
+export type Token = z.infer<typeof TokenSchema>;
+
 // Disabled after using `select` in the Prisma query to select only the necessary fields.
 // export function toUserResponse(user: UserModel): UserResponse {
 //   return {

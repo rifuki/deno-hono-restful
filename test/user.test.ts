@@ -73,12 +73,16 @@ Deno.test({
   name: "[POST /api/users/login] should be able to login",
   fn: async () => {
     try {
-      const user = await UserTest.create("userlogin");
+      const payload = {
+        username: "userlogin",
+        password: "userpassword",
+      };
+      const user = await UserTest.create(payload);
       const response = await app.request("/api/users/login", {
         method: "POST",
         body: JSON.stringify({
           username: user.username,
-          password: "testpassword",
+          password: payload.password,
         }),
       });
 
@@ -111,6 +115,67 @@ Deno.test({
     } finally {
       await UserTest.delete();
     }
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name:
+    "[GET /api/users/@me] should not be able to get user data without token",
+  fn: async () => {
+    const response = await app.request("/api/users/@me", {
+      method: "GET",
+    });
+    assertEquals(response.status, 401);
+
+    const body = await response.json();
+    assertExists(body.errors);
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name:
+    "[GET /api/users/@me] should not be able to get user data with invalid token",
+  fn: async () => {
+    const response = await app.request("/api/users/@me", {
+      method: "GET",
+      headers: {
+        Authorization: crypto.randomUUID(),
+      },
+    });
+    assertEquals(response.status, 401);
+
+    const body = await response.json();
+    assertExists(body.errors);
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "[GET /api/users/@me] should be able to own user data",
+  fn: async () => {
+    const payload = {
+      username: "whoami",
+      password: "mypassword",
+    };
+    await UserTest.delete(payload.username);
+    await UserTest.create(payload);
+    const user = await UserTest.login(payload);
+
+    const response = await app.request("/api/users/@me", {
+      method: "GET",
+      headers: {
+        Authorization: user.token!,
+      },
+    });
+    assertEquals(response.status, 200);
+
+    const body = await response.json();
+    assertEquals(body.data.username, payload.username);
   },
   sanitizeResources: false,
   sanitizeOps: false,
