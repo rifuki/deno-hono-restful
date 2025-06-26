@@ -7,19 +7,19 @@ import { UserService } from "@/service/index.ts";
 const userController = new Hono<{ Variables: ApplicationVariables }>();
 
 userController.post("/", async (c) => {
-  const request = c.req.parseBody;
+  const raw_json = c.req.parseBody;
 
-  const response = await UserService.register(request);
+  const response = await UserService.register(raw_json);
 
   return c.json({
     data: response,
-  });
+  }, 201);
 });
 
 userController.post("/login", async (c) => {
-  const request = c.req.parseBody;
+  const raw_json = c.req.parseBody;
 
-  const response = await UserService.login(request);
+  const response = await UserService.login(raw_json);
 
   return c.json({ data: response });
 });
@@ -47,6 +47,17 @@ userController.get("/@me", (c) => {
     data: {
       username: user.username,
     },
+  });
+});
+
+userController.patch("/@me", async (c) => {
+  const user = c.get("user");
+  const raw_json = c.req.parseBody;
+
+  const response = await UserService.update(user, raw_json);
+
+  return c.json({
+    data: response,
   });
 });
 
