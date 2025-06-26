@@ -6,7 +6,7 @@
   "imports": {
     "@db/": "./prisma/generated/",
     "@/": "./src/",
-    "@bronti/argon2": "jsr:@bronti/argon2@^1.0.3",
+    "@felix/argon2": "jsr:@felix/argon2@^3.0.2",
     "@hono/hono": "jsr:@hono/hono@^4.8.3",
     "@prisma/client": "npm:@prisma/client@^6.10.1",
     "@prisma/extension-accelerate": "npm:@prisma/extension-accelerate@^2.0.1",
