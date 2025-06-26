@@ -68,3 +68,50 @@ Deno.test({
   sanitizeResources: false,
   sanitizeOps: false,
 });
+
+Deno.test({
+  name: "[POST /api/users/login] should be able to login",
+  fn: async () => {
+    try {
+      const user = await UserTest.create("userlogin");
+      const response = await app.request("/api/users/login", {
+        method: "POST",
+        body: JSON.stringify({
+          username: user.username,
+          password: "testpassword",
+        }),
+      });
+
+      assertEquals(response.status, 200);
+      const body = await response.json();
+      assertExists(body.data.token);
+    } finally {
+      await UserTest.delete("userlogin");
+    }
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "[POST /api/users/login] should be rejected if username is wrong",
+  fn: async () => {
+    try {
+      const response = await app.request("/api/users/login", {
+        method: "POST",
+        body: JSON.stringify({
+          username: "wronguser",
+          password: "wrongpassword",
+        }),
+      });
+      assertEquals(response.status, 401);
+
+      const body = await response.json();
+      assertExists(body.errors);
+    } finally {
+      await UserTest.delete();
+    }
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});

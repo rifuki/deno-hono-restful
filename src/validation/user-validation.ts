@@ -1,7 +1,16 @@
-import { z, ZodType } from "zod";
-export class UserValidation {
-  static readonly REGISTER: ZodType = z.object({
-    username: z.string().min(1).max(20),
-    password: z.string().min(3).max(100),
-  });
+import { ZodType } from "zod";
+
+import {
+  LoginUserRequest,
+  LoginUserSchema,
+  RegisterUserRequest,
+  RegisterUserSchema,
+} from "../model/user-model.ts";
+
+class UserValidation {
+  static readonly REGISTER: ZodType<RegisterUserRequest> = RegisterUserSchema;
+
+  static readonly LOGIN: ZodType<LoginUserRequest> = LoginUserSchema;
 }
+
+export default UserValidation;
