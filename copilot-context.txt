@@ -13,10 +13,17 @@
 > #file:`src/app.ts`
 > #file:`src/application/database.ts`
 > #file:`src/application/logging.ts`
+> #file:`src/controller/index.ts`
 > #file:`src/controller/user-controller.ts`
+> #file:`src/middleware/hono-app-error.ts`
+> #file:`src/middleware/index.ts`
+> #file:`src/middleware/json-body-middleware.ts`
+> #file:`src/model/app-model.ts`
 > #file:`src/model/user-model.ts`
 > #file:`src/server.ts`
+> #file:`src/service/index.ts`
 > #file:`src/service/user-service.ts`
+> #file:`src/validation/index.ts`
 > #file:`src/validation/user-validation.ts`
 > #file:`test/test-util.ts`
 > #file:`test/user.test.ts`

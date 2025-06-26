@@ -11,36 +11,36 @@ import { logger } from "@/application/logging.ts";
 
 logger.level = "error";
 
-Deno.test("[POST /api/users] should reject register a new user if request body is invalid", async () => {
-  const response = await app.request("/api/users", {
-    method: "POST",
-    body: JSON.stringify(
-      {
-        "username": "",
-        "password": "",
-      } satisfies RegisterUserRequest,
-    ),
-  });
-  assertEquals(response.status, 400);
+Deno.test(
+  "[POST /api/users] should reject register a new user if request body is invalid",
+  async () => {
+    const response = await app.request("/api/users", {
+      method: "POST",
+      body: JSON.stringify({
+        username: "",
+        password: "",
+      } satisfies RegisterUserRequest),
+    });
+    assertEquals(response.status, 400);
 
-  const body = await response.json();
-  assertExists(body.errors);
-});
+    const body = await response.json();
+    assertExists(body.errors);
+  },
+);
 
 Deno.test({
-  name:
-    "[POST /api/users] should reject register a new user if username already exists",
+  name: "[POST /api/users] should reject register a new user if username already exists",
   fn: async () => {
+    await UserTest.delete();
     try {
-      await UserTest.create();
+      const { username } = await UserTest.create();
+
       const response = await app.request("/api/users", {
         method: "POST",
-        body: JSON.stringify(
-          {
-            username: "testuser",
-            password: "testpassword",
-          } satisfies RegisterUserRequest,
-        ),
+        body: JSON.stringify({
+          username, // Reusing the username from UserTest.create()
+          password: "testpassword",
+        } satisfies RegisterUserRequest),
       });
       assertEquals(response.status, 400);
       const body = await response.json();
@@ -59,12 +59,10 @@ Deno.test({
     try {
       const response = await app.request("/api/users", {
         method: "POST",
-        body: JSON.stringify(
-          {
-            username: "teto",
-            password: "tetopassword",
-          } satisfies RegisterUserRequest,
-        ),
+        body: JSON.stringify({
+          username: "teto",
+          password: "tetopassword",
+        } satisfies RegisterUserRequest),
       });
       assertEquals(response.status, 201);
       const body = await response.json();
@@ -112,12 +110,10 @@ Deno.test({
     try {
       const response = await app.request("/api/users/login", {
         method: "POST",
-        body: JSON.stringify(
-          {
-            username: "wronguser",
-            password: "wrongpassword",
-          } satisfies LoginUserRequest,
-        ),
+        body: JSON.stringify({
+          username: "wronguser",
+          password: "wrongpassword",
+        } satisfies LoginUserRequest),
       });
       assertEquals(response.status, 401);
 
@@ -132,8 +128,7 @@ Deno.test({
 });
 
 Deno.test({
-  name:
-    "[GET /api/users/@me] should not be able to get user data without token",
+  name: "[GET /api/users/@me] should not be able to get user data without token",
   fn: async () => {
     const response = await app.request("/api/users/@me", {
       method: "GET",
@@ -148,8 +143,7 @@ Deno.test({
 });
 
 Deno.test({
-  name:
-    "[GET /api/users/@me] should not be able to get user data with invalid token",
+  name: "[GET /api/users/@me] should not be able to get user data with invalid token",
   fn: async () => {
     const response = await app.request("/api/users/@me", {
       method: "GET",
@@ -220,12 +214,10 @@ Deno.test({
         headers: {
           Authorization: token!,
         },
-        body: JSON.stringify(
-          {
-            username: payload.username,
-            password: payload.password,
-          } satisfies UpdateUserRequest,
-        ),
+        body: JSON.stringify({
+          username: payload.username,
+          password: payload.password,
+        } satisfies UpdateUserRequest),
       });
       assertEquals(response.status, 200);
 
@@ -259,11 +251,9 @@ Deno.test({
         headers: {
           Authorization: token!,
         },
-        body: JSON.stringify(
-          {
-            username: payload.username,
-          } satisfies UpdateUserRequest,
-        ),
+        body: JSON.stringify({
+          username: payload.username,
+        } satisfies UpdateUserRequest),
       });
       assertEquals(response.status, 200);
 
@@ -297,11 +287,9 @@ Deno.test({
         headers: {
           Authorization: token!,
         },
-        body: JSON.stringify(
-          {
-            password: payload.password,
-          } satisfies UpdateUserRequest,
-        ),
+        body: JSON.stringify({
+          password: payload.password,
+        } satisfies UpdateUserRequest),
       });
       assertEquals(response.status, 200);
 
@@ -337,12 +325,10 @@ Deno.test({
         headers: {
           Authorization: token!,
         },
-        body: JSON.stringify(
-          {
-            username: "",
-            password: "",
-          } satisfies UpdateUserRequest,
-        ),
+        body: JSON.stringify({
+          username: "",
+          password: "",
+        } satisfies UpdateUserRequest),
       });
       assertEquals(response.status, 400);
 
@@ -351,6 +337,50 @@ Deno.test({
     } finally {
       await UserTest.delete(payload.username);
     }
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "[DELETE /api/users/@me] should be able to logout",
+  fn: async () => {
+    await UserTest.delete();
+    try {
+      await UserTest.create();
+      const { token } = await UserTest.login();
+      const response = await app.request("/api/users/@me", {
+        method: "DELETE",
+        headers: {
+          Authorization: token!,
+        },
+      });
+      assertEquals(response.status, 200);
+
+      const body = await response.json();
+      assertEquals(body.data, true);
+    } finally {
+      await UserTest.delete();
+    }
+  },
+  sanitizeResources: false,
+  sanitizeOps: false,
+});
+
+Deno.test({
+  name: "[DELETE /api/users/@me] should not be able to logout without invalid token",
+  fn: async () => {
+    await UserTest.create();
+    const response = await app.request("/api/users/@me", {
+      method: "DELETE",
+      headers: {
+        Authorization: crypto.randomUUID(),
+      },
+    });
+    assertEquals(response.status, 401);
+
+    const body = await response.json();
+    assertExists(body.errors);
   },
   sanitizeResources: false,
   sanitizeOps: false,

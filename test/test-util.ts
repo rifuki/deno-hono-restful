@@ -31,7 +31,7 @@ export class UserTest {
   static async delete(username: string = USERNAME) {
     await prismaClient.user.deleteMany({
       where: {
-        username: username ?? "testuser",
+        username,
       },
     });
   }
