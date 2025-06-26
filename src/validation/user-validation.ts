@@ -7,7 +7,9 @@ import {
   RegisterUserSchema,
   Token,
   TokenSchema,
-} from "../model/user-model.ts";
+  UpdateUserRequest,
+  UpdateUserSchema,
+} from "@/model/user-model.ts";
 
 class UserValidation {
   static readonly REGISTER: ZodType<RegisterUserRequest> = RegisterUserSchema;
@@ -15,6 +17,8 @@ class UserValidation {
   static readonly LOGIN: ZodType<LoginUserRequest> = LoginUserSchema;
 
   static readonly TOKEN: ZodType<Token> = TokenSchema;
+
+  static readonly UPDATE: ZodType<UpdateUserRequest> = UpdateUserSchema;
 }
 
 export default UserValidation;

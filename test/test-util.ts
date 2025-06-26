@@ -36,7 +36,9 @@ export class UserTest {
     });
   }
 
-  static async login(payload: Partial<Payload> = {}) {
+  static async login(
+    payload: Partial<Payload> = {},
+  ): Promise<LoginUserResponse> {
     const { username = USERNAME, password = PASSWORD } = payload;
     const response = await app.request("/api/users/login", {
       method: "POST",
@@ -48,6 +50,6 @@ export class UserTest {
 
     const user = await response.json();
 
-    return user.data satisfies LoginUserResponse;
+    return user.data;
   }
 }
