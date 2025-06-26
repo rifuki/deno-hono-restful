@@ -57,7 +57,7 @@ Response Body :
 
 ## Get User
 
-Endpoint: GET api/users/{username}
+Endpoint: GET api/users/@me
 
 Request Headers :
 
@@ -75,7 +75,7 @@ Response Body :
 
 ## Update User
 
-Endpoint: PATCH api/users/{username}
+Endpoint: PATCH api/users/@me
 
 Request Headers :
 
@@ -102,7 +102,7 @@ Response Body :
 
 ## Logout User
 
-Endpoint: DELETE api/users/{username}
+Endpoint: DELETE api/users/@me
 
 Request Headers :
 

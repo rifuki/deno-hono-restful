@@ -8,7 +8,7 @@ const app = new Hono();
 
 app.use("/api/*", jsonBodyMiddleware);
 
-app.route("/", userController);
+app.route("/api/users", userController);
 
 app.onError(honoAppError);
 

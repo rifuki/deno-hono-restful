@@ -5,6 +5,8 @@ import { prismaClient } from "@/application/database.ts";
 import { UserResponse } from "@/model/user-model.ts";
 import { UserValidation } from "@/validation/index.ts";
 
+import { User } from "@db/client.ts";
+
 class UserService {
   /**
    * Registers a new user in the system.
@@ -82,6 +84,22 @@ class UserService {
     });
 
     return response;
+  }
+
+  static async get(token: string): Promise<User> {
+    UserValidation.TOKEN.parse(token);
+
+    const user = await prismaClient.user.findFirst({
+      where: {
+        token,
+      },
+    });
+
+    if (!user) {
+      throw new HTTPException(401, { message: "Invalid token." });
+    }
+
+    return user;
   }
 }
 
