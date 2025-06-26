@@ -5,16 +5,18 @@ export const RegisterUserSchema = z.object({
   password: z.string().min(3).max(100),
 });
 export type RegisterUserRequest = z.infer<typeof RegisterUserSchema>;
+export type RegisterUserResponse = {
+  username: string;
+};
 
 export const LoginUserSchema = z.object({
   username: z.string().min(1).max(20),
   password: z.string().min(3).max(100),
 });
 export type LoginUserRequest = z.infer<typeof LoginUserSchema>;
-
-export type UserResponse = {
+export type LoginUserResponse = {
   username: string;
-  token?: string | null;
+  token: string | null;
 };
 
 export const TokenSchema = z.string().min(1);

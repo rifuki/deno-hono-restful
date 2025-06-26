@@ -2,7 +2,7 @@ import { assertEquals, assertExists } from "@std/assert";
 
 import app from "@/app.ts";
 import { UserTest } from "./test-util.ts";
-import { RegisterUserRequest } from "@/model/user-model.ts";
+import { LoginUserRequest, RegisterUserRequest } from "@/model/user-model.ts";
 
 Deno.test("[POST /api/users] should reject register a new user if request body is invalid", async () => {
   const response = await app.request("/api/users", {
@@ -52,10 +52,12 @@ Deno.test({
     try {
       const response = await app.request("/api/users", {
         method: "POST",
-        body: JSON.stringify({
-          username: "teto",
-          password: "tetopassword",
-        }),
+        body: JSON.stringify(
+          {
+            username: "teto",
+            password: "tetopassword",
+          } satisfies RegisterUserRequest,
+        ),
       });
       assertEquals(response.status, 200);
       const body = await response.json();
@@ -76,7 +78,7 @@ Deno.test({
       const payload = {
         username: "userlogin",
         password: "userpassword",
-      };
+      } satisfies LoginUserRequest;
       const user = await UserTest.create(payload);
       const response = await app.request("/api/users/login", {
         method: "POST",
@@ -103,10 +105,12 @@ Deno.test({
     try {
       const response = await app.request("/api/users/login", {
         method: "POST",
-        body: JSON.stringify({
-          username: "wronguser",
-          password: "wrongpassword",
-        }),
+        body: JSON.stringify(
+          {
+            username: "wronguser",
+            password: "wrongpassword",
+          } satisfies LoginUserRequest,
+        ),
       });
       assertEquals(response.status, 401);
 
