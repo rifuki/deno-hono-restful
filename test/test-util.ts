@@ -2,7 +2,7 @@ import { hash } from "@felix/argon2";
 
 import app from "@/app.ts";
 import { prismaClient } from "@/application/database.ts";
-import { UserResponse } from "@/model/user-model.ts";
+import { LoginUserResponse, RegisterUserResponse } from "@/model/user-model.ts";
 
 const USERNAME = "testuser";
 const PASSWORD = "testpassword";
@@ -15,7 +15,7 @@ type Payload = {
 export class UserTest {
   static async create(
     payload: Partial<Payload> = {},
-  ): Promise<UserResponse> {
+  ): Promise<RegisterUserResponse> {
     const { username = USERNAME, password = PASSWORD } = payload;
     return await prismaClient.user.create({
       data: {
@@ -24,7 +24,6 @@ export class UserTest {
       },
       select: {
         username: true,
-        token: true,
       },
     });
   }
@@ -49,6 +48,6 @@ export class UserTest {
 
     const user = await response.json();
 
-    return user.data satisfies UserResponse;
+    return user.data satisfies LoginUserResponse;
   }
 }

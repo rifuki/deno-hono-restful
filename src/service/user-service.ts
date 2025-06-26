@@ -2,7 +2,7 @@ import { hash, verify } from "@felix/argon2";
 import { HTTPException } from "@hono/hono/http-exception";
 
 import { prismaClient } from "@/application/database.ts";
-import { UserResponse } from "@/model/user-model.ts";
+import { LoginUserResponse, RegisterUserResponse } from "@/model/user-model.ts";
 import { UserValidation } from "@/validation/index.ts";
 
 import { User } from "@db/client.ts";
@@ -14,7 +14,7 @@ class UserService {
    * @returns A promise that resolves to the UserResponse containing the username.
    * @throws HTTPException if the username already exists.
    */
-  static async register(raw: unknown): Promise<UserResponse> {
+  static async register(raw: unknown): Promise<RegisterUserResponse> {
     // Validate the request using the UserValidation schema
     const request = UserValidation.REGISTER.parse(raw);
 
@@ -47,7 +47,7 @@ class UserService {
     return user;
   }
 
-  static async login(raw: unknown): Promise<UserResponse> {
+  static async login(raw: unknown): Promise<LoginUserResponse> {
     // Validate the request using the UserValidation schema
     const request = UserValidation.LOGIN.parse(raw);
 
